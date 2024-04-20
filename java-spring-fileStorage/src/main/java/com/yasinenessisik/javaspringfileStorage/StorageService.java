@@ -45,11 +45,17 @@ public class StorageService {
 
 
     public String uploadImageToFileSystem(MultipartFile file) throws IOException {
-        String filePath=storageConfig.folderPath()+file.getOriginalFilename();
-        FileData fileData=fileDataRepository.save(FileData.builder()
-                .name(file.getOriginalFilename())
+        String fileName = file.getOriginalFilename();
+        String filePath = storageConfig.folderPath() + File.separator + fileName;
+        FileData fileData = fileDataRepository.save(FileData.builder()
+                .name(fileName)
                 .type(file.getContentType())
                 .filePath(filePath).build());
+
+        File directory = new File(storageConfig.folderPath());
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
 
         file.transferTo(new File(filePath));
 
