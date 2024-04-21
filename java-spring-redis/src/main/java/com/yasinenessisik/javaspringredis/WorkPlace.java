@@ -14,6 +14,7 @@ import java.io.Serializable;
 @ToString
 public class WorkPlace implements Serializable {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
 

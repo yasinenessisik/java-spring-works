@@ -48,9 +48,6 @@ public class EmployeeService{
     }
 
     public Employee saveEmployee(Employee employee) {
-        WorkPlace workPlace = new WorkPlace();
-        workPlace.setId(1);
-        employee.getWorkPlaces().add(workPlace);
         Employee savedEmployee = employeeRepository.save(employee);
 
         final String key = "emp_" + savedEmployee.getId();
