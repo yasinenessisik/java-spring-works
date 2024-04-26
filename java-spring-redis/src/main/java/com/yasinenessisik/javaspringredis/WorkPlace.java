@@ -8,18 +8,17 @@ import java.io.Serializable;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @Entity
-@NoArgsConstructor
-@ToString
-public class WorkPlace implements Serializable {
+public class WorkPlace{
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer workplaceId;
     private String workplaceName;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "employee_id")
-    @JsonIgnore
     private Employee employee;
 
+    public WorkPlace() {
+    }
 }

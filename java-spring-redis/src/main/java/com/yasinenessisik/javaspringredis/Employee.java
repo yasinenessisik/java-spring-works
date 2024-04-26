@@ -1,6 +1,8 @@
 package com.yasinenessisik.javaspringredis;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.jdbc.Work;
@@ -14,15 +16,17 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @Entity
-public class Employee implements Serializable {
+@ToString
+public class Employee{
     @Id
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer employee_id;
     private String firstName;
     private String lastName;
     private String email;
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-    private List<WorkPlace> workPlaces;
+    private List<WorkPlace> workPlaces = new ArrayList<>();
 
     public Employee() {
 

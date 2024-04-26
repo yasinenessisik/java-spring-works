@@ -1,6 +1,5 @@
 package com.yasinenessisik.javaspringredis;
 
-import com.yasinenessisik.javaspringredis.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +13,11 @@ import java.util.Optional;
 public class EmployeeController {
 
     private final EmployeeService employeeService;
-
+    private final WorkPlaceRepository workPlaceRepository;
     @Autowired
-    public EmployeeController(EmployeeService employeeService) {
+    public EmployeeController(EmployeeService employeeService, WorkPlaceRepository workPlaceRepository) {
         this.employeeService = employeeService;
+        this.workPlaceRepository = workPlaceRepository;
     }
 
     @GetMapping("/{id}")
@@ -37,7 +37,7 @@ public class EmployeeController {
     }
 
     @PostMapping
-    public ResponseEntity<Employee> saveEmployee(@RequestBody Employee employee) {
+    public ResponseEntity<EmployeeSaveDto> saveEmployee(@RequestBody EmployeeSaveDto employee) {
 
         employeeService.saveEmployee(employee);
         return ResponseEntity.status(HttpStatus.CREATED).body(employee);
@@ -47,7 +47,7 @@ public class EmployeeController {
     public ResponseEntity<?> updateEmployee(@PathVariable Integer id, @RequestBody Employee employee) {
         Optional<Employee> existingEmployee = employeeService.getEmployeeById(id);
         if (existingEmployee.isPresent()) {
-            employee.setId(id);
+            employee.setEmployee_id(id);
             employeeService.updateEmployee(employee);
             return ResponseEntity.ok(employee);
         } else {
@@ -64,5 +64,10 @@ public class EmployeeController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+    @GetMapping("workplace/{id}")
+    public WorkPlace getWorkplaceById(@PathVariable Integer id) {
+        Optional<Employee> employee = employeeService.getEmployeeById(id);
+        return workPlaceRepository.findById(id).orElseThrow(()->new RuntimeException("sadasd"));
     }
 }

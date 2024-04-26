@@ -1,9 +1,11 @@
 package com.yasinenessisik.javaspringredis;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,9 +18,18 @@ public class EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final EmployeeRedisRepository employeeRedisRepository;
     private final WorkPlaceRepository workPlaceRepository;
-    public void saveEmployee(Employee employee) {
-        employeeRepository.save(employee);
-        saveEmployeeRedis(convertToEmployeeRedis(employee));
+    @Transactional
+    public Employee saveEmployee(EmployeeSaveDto from) {
+        Employee employee = new Employee();
+        employee.setEmail(from.getEmail());
+        employee.setFirstName(from.getFirstName());
+        employee.setLastName(from.getLastName());
+        WorkPlace workPlace = new WorkPlace();
+        workPlace.setWorkplaceName(from.getWorkplaceName());
+        employee.getWorkPlaces().add(workPlace);
+        Employee save = employeeRepository.save(employee);
+        saveEmployeeRedis(convertToEmployeeRedis(save));
+        return save;
     }
 
     public void deleteEmployee(Integer id) {
@@ -28,7 +39,7 @@ public class EmployeeService {
 
     public void updateEmployee(Employee employee) {
         employeeRepository.save(employee);
-        Optional<EmployeeRedis> employeeRedis = getEmployeeRedisById(employee.getId());
+        Optional<EmployeeRedis> employeeRedis = getEmployeeRedisById(employee.getEmployee_id());
         if (employeeRedis.isPresent()) {
             saveEmployeeRedis(convertToEmployeeRedis(employee));
         }
@@ -42,6 +53,8 @@ public class EmployeeService {
         } else {
             System.out.println("Database'ten geldi");
             Optional<Employee> employeeFromDatabase = employeeRepository.findById(id);
+            System.out.println(employeeFromDatabase.get().toString());
+
             employeeFromDatabase.ifPresent(emp -> saveEmployeeRedis(convertToEmployeeRedis(emp)));
             return employeeFromDatabase;
         }
@@ -56,12 +69,13 @@ public class EmployeeService {
     }
 
     private Optional<EmployeeRedis> getEmployeeRedisById(Integer id) {
-        return employeeRedisRepository.findById(id);
+        Optional<EmployeeRedis> byId = employeeRedisRepository.findById(id);
+        return byId;
     }
 
     private EmployeeRedis convertToEmployeeRedis(Employee employee) {
         EmployeeRedis employeeRedis = new EmployeeRedis();
-        employeeRedis.setId(employee.getId());
+        employeeRedis.setId(employee.getEmployee_id());
         employeeRedis.setFirstName(employee.getFirstName());
         employeeRedis.setLastName(employee.getLastName());
         employeeRedis.setEmail(employee.getEmail());
@@ -72,7 +86,7 @@ public class EmployeeService {
 
     private Employee convertToEmployee(EmployeeRedis employeeRedis) {
         Employee employee = new Employee();
-        employee.setId(employeeRedis.getId());
+        employee.setEmployee_id(employeeRedis.getId());
         employee.setFirstName(employeeRedis.getFirstName());
         employee.setLastName(employeeRedis.getLastName());
         employee.setEmail(employeeRedis.getEmail());
