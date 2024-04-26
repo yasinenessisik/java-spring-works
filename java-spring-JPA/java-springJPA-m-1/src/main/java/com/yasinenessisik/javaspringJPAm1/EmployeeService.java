@@ -25,7 +25,16 @@ public class EmployeeService {
         return employee;
     }
 
-    public Employee createEmployee(Employee employee) {
+    public Employee createEmployee(SaveEmployeeDto from) {
+
+        Employee employee = new Employee();
+        employee.setEmployeeName(from.getEmployeeName());
+        Workplace workplace = new Workplace();
+        workplace.setWorkplaceName(from.getWorkplaceName());
+
+        workplace.setEmployee(employee);
+        employee.getWorkPlaces().add(workplace);
+
         return employeeRepository.save(employee);
     }
 
@@ -38,7 +47,7 @@ public class EmployeeService {
     }
 
     public void deleteEmployee(Integer employeeId){
-        getEmployeeById(employeeId); // Throws ResourceNotFoundException if not found
+        getEmployeeById(employeeId);
         employeeRepository.deleteById(employeeId);
     }
 
