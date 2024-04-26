@@ -26,7 +26,7 @@ public class EmployeeService {
     }
 
     public Employee createEmployee(SaveEmployeeDto from) {
-
+        //Burası çokomelli
         Employee employee = new Employee();
         employee.setEmployeeName(from.getEmployeeName());
         Workplace workplace = new Workplace();
