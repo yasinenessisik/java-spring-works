@@ -25,7 +25,7 @@ public class Employee{
     private String lastName;
     private String email;
 
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<WorkPlace> workPlaces = new ArrayList<>();
 
     public Employee() {

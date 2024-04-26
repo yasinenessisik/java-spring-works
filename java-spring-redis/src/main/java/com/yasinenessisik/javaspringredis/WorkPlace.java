@@ -9,7 +9,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @Entity
-public class WorkPlace{
+public class WorkPlace implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer workplaceId;
@@ -17,6 +17,7 @@ public class WorkPlace{
 
     @ManyToOne
     @JoinColumn(name = "employee_id")
+    @JsonIgnore
     private Employee employee;
 
     public WorkPlace() {

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -18,6 +19,7 @@ public class EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final EmployeeRedisRepository employeeRedisRepository;
     private final WorkPlaceRepository workPlaceRepository;
+
     @Transactional
     public Employee saveEmployee(EmployeeSaveDto from) {
         Employee employee = new Employee();
@@ -26,8 +28,11 @@ public class EmployeeService {
         employee.setLastName(from.getLastName());
         WorkPlace workPlace = new WorkPlace();
         workPlace.setWorkplaceName(from.getWorkplaceName());
+
+        workPlace.setEmployee(employee);
         employee.getWorkPlaces().add(workPlace);
         Employee save = employeeRepository.save(employee);
+
         saveEmployeeRedis(convertToEmployeeRedis(save));
         return save;
     }
@@ -49,13 +54,15 @@ public class EmployeeService {
         Optional<EmployeeRedis> employeeRedis = getEmployeeRedisById(id);
         if (employeeRedis.isPresent()) {
             System.out.println("Redis'ten geldi.");
-            return Optional.of(convertToEmployee(employeeRedis.get()));
+            EmployeeRedis employeeRedis1 = employeeRedis.get();
+            System.out.println(employeeRedis1);
+            return Optional.of(convertToEmployee(employeeRedis1));
         } else {
             System.out.println("Database'ten geldi");
             Optional<Employee> employeeFromDatabase = employeeRepository.findById(id);
-            System.out.println(employeeFromDatabase.get().toString());
-
-            employeeFromDatabase.ifPresent(emp -> saveEmployeeRedis(convertToEmployeeRedis(emp)));
+            if (employeeFromDatabase.isPresent()) {
+                saveEmployeeRedis(convertToEmployeeRedis(employeeFromDatabase.get()));
+            }
             return employeeFromDatabase;
         }
     }
@@ -79,8 +86,17 @@ public class EmployeeService {
         employeeRedis.setFirstName(employee.getFirstName());
         employeeRedis.setLastName(employee.getLastName());
         employeeRedis.setEmail(employee.getEmail());
-        employeeRedis.setWorkPlaces(employee.getWorkPlaces());
-        employeeRedis.setExpration(30L);
+        List<WorkPlaceRedis> workPlaces = employee.getWorkPlaces().stream().map(workPlace ->{
+                    WorkPlaceRedis workPlaceRedis = new WorkPlaceRedis();
+                    workPlaceRedis.setWorkplaceId(workPlace.getWorkplaceId());
+                    workPlaceRedis.setWorkplaceName(workPlace.getWorkplaceName());
+                    return workPlaceRedis;
+                }
+
+                ).collect(Collectors.toList());
+
+        employeeRedis.setWorkPlaces(workPlaces);
+        employeeRedis.setExpration(30L); // Adjust expiration time as needed
         return employeeRedis;
     }
 
@@ -90,7 +106,15 @@ public class EmployeeService {
         employee.setFirstName(employeeRedis.getFirstName());
         employee.setLastName(employeeRedis.getLastName());
         employee.setEmail(employeeRedis.getEmail());
-        employee.setWorkPlaces(employeeRedis.getWorkPlaces());
+        List<WorkPlace> workPlaces = employeeRedis.getWorkPlaces().stream().map(workPlace ->{
+                    WorkPlace workPlaceRedis = new WorkPlace();
+                    workPlaceRedis.setWorkplaceId(workPlace.getWorkplaceId());
+                    workPlaceRedis.setWorkplaceName(workPlace.getWorkplaceName());
+                    return workPlaceRedis;
+                }
+
+        ).collect(Collectors.toList());
+        employee.setWorkPlaces(workPlaces);
         return employee;
     }
 }
