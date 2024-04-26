@@ -9,31 +9,25 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
 
 @Configuration
-public class RedisConfig extends CachingConfigurerSupport {
+@EnableRedisRepositories
+public class RedisConfig{
 
     @Bean
-    protected LettuceConnectionFactory redisConnectionFactory() {
-        final ClientOptions clientOptions = ClientOptions.builder().build();
-        LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
-                .clientOptions(clientOptions).build();
-        RedisStandaloneConfiguration serverConfig = new RedisStandaloneConfiguration("127.0.0.1",
-                6379);
-        return new LettuceConnectionFactory(serverConfig, clientConfig);
+    public LettuceConnectionFactory redisConnectionFactory() {
+        return new LettuceConnectionFactory();
     }
 
     @Bean
     public RedisTemplate<?, ?> redisTemplate() {
-        final RedisTemplate<?, ?> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(redisConnectionFactory());
-        redisTemplate.setEnableTransactionSupport(true);
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
-        return redisTemplate;
+        RedisTemplate<byte[], byte[]> template = new RedisTemplate<>();
+        template.setConnectionFactory(redisConnectionFactory());
+        return template;
     }
 }

@@ -14,7 +14,6 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @Entity
-@ToString
 public class Employee implements Serializable {
     @Id
     private Integer id;
@@ -22,11 +21,10 @@ public class Employee implements Serializable {
     private String lastName;
     private String email;
 
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private List<WorkPlace> workPlaces;
 
     public Employee() {
-        this.workPlaces = new ArrayList<>();
+
     }
-    // getter ve setter'lar
 }

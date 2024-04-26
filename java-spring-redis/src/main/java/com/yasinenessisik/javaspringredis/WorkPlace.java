@@ -14,13 +14,12 @@ import java.io.Serializable;
 @ToString
 public class WorkPlace implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    private String name;
+    private Integer workplaceId;
+    private String workplaceName;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "employeeid")
+    @JoinColumn(name = "employee_id")
     @JsonIgnore
     private Employee employee;
-    // getter ve setter'lar
+
 }
