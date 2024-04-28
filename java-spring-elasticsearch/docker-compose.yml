@@ -11,6 +11,11 @@ services:
       - xpack.security.enabled=false
     volumes:
       - $HOME/app:/var/app
+    networks:
+      - my-network
     ports:
       - "9200:9200"
       - "9300:9300"
+
+networks:
+  my-network:

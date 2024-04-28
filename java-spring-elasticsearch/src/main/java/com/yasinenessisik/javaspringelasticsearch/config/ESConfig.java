@@ -1,4 +1,4 @@
-package com.yasinenessisik.javaspringelasticsearch;
+package com.yasinenessisik.javaspringelasticsearch.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
@@ -8,13 +8,19 @@ import org.springframework.data.elasticsearch.client.elc.ElasticsearchConfigurat
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
 @Configuration
-@EnableElasticsearchRepositories
-@ComponentScan
-public class ESconfig extends ElasticsearchConfiguration {
+@EnableElasticsearchRepositories(basePackages = "com.yasinenessisik.javaspringelasticsearch.repository")
+@ComponentScan(basePackages = {"com.yasinenessisik.javaspringelasticsearch"})
+public class ESConfig extends ElasticsearchConfiguration {
+
     @Value("${elasticsearch.url}")
-    private String elasticSearchUrl;
+    private String elasticsearchUrl;
+
+
     @Override
     public ClientConfiguration clientConfiguration() {
-        return ClientConfiguration.builder().connectedTo(elasticSearchUrl).build();
+        return ClientConfiguration.builder()
+                .connectedTo(elasticsearchUrl)
+                .build();
     }
 }
+
