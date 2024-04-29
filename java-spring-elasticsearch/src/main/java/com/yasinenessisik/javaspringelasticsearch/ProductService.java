@@ -14,6 +14,8 @@ import util.ESutil;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,5 +44,36 @@ public class ProductService {
 
     public List<Product> searchProductByFieldAndValue(SearchRequestDto searchRequestDto) {
         return null;
+    }
+
+    public Set<Product> searchProductByAutoSuggest(String name) throws IOException {
+        Query autoSuggestQuery = ESutil.buildAutoSuggestQuery(name);
+        log.info("Elasticsearch query: {}", autoSuggestQuery.toString());
+
+        try {
+            return elasticsearchClient.search(q -> q.index("product_index").query(autoSuggestQuery), Product.class)
+                    .hits()
+                    .hits()
+                    .stream()
+                    .map(Hit::source)
+                    .collect(Collectors.toSet());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void deleteAll(){
+        productRepository.deleteAll();
+    }
+    public void loadAll(){
+        for (int i = 1; i <= 20; i++) {
+            Product product = new Product();
+            product.setId(String.valueOf(i));
+            product.setName("Product " + i);
+            product.setCategory("Category " + (char)('A' + (i - 1) % 3));
+            product.setPrice(100 + i * 10);
+            product.setBrand("Brand " + (char)('X' + (i - 1) % 3));
+            System.out.println(product.toString());
+            productRepository.save(product);
+        }
     }
 }

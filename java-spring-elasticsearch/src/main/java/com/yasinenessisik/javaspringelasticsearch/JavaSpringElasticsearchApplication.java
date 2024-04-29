@@ -25,22 +25,6 @@ public class JavaSpringElasticsearchApplication implements ApplicationRunner {
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
-		List<Product> productList = new ArrayList<>();
-		ObjectMapper objectMapper = new ObjectMapper();
 
-		for (int i = 1; i <= 20; i++) {
-			Product product = new Product();
-			product.setId(String.valueOf(i));
-			product.setName("Product " + i);
-			product.setCategory("Category " + (char)('A' + (i - 1) % 3));
-			product.setPrice(100 + i * 10);
-			product.setBrand("Brand " + (char)('X' + (i - 1) % 3));
-			productList.add(product);
-		}
-
-		for (Product product : productList) {
-			String json = objectMapper.writeValueAsString(product);
-			productRepository.save(product);
-		}
 	}
 }

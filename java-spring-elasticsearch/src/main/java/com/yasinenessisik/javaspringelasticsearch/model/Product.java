@@ -15,15 +15,16 @@ import org.springframework.data.elasticsearch.annotations.Setting;
 @Document(indexName = "product_index")
 @Setting(settingPath = "static/es-settings.json")
 @JsonIgnoreProperties(ignoreUnknown = true)
+@ToString
 public class Product {
     @Id
     private String id;
-    @Field(name = "name", type = FieldType.Text)
+    @Field(name = "name", type = FieldType.Text, analyzer = "autocomplete_index", searchAnalyzer = "autocomplete_search")
     private String name;
     @Field(name = "category", type = FieldType.Keyword)
     private String category;
     @Field(name = "price", type = FieldType.Integer)
     private Integer price;
-    @Field(name = "brand", type = FieldType.Text)
+    @Field(name = "brand", type = FieldType.Text, analyzer = "autocomplete_index", searchAnalyzer = "autocomplete_search")
     private String brand;
 }
